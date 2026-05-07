@@ -1,0 +1,23 @@
+{
+  "short_name": "ChronoMAD",
+  "name": "ChronoMAD - Suivi du temps",
+  "description": "outil de suivi du temps intelligent et efficace pour les professionnels et les équipes",
+  "author": "MAD",
+  "copyright": "2026 MAD",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "256x256 128x128 64x64 48x48 32x32 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

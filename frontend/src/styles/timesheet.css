@@ -1,0 +1,60 @@
+.view {
+  display: none;
+}
+.view.active {
+  display: block;
+}
+
+/* Timesheet view */
+.ts-week {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.ts-week-label {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+.ts-entry {
+  display: grid;
+  grid-template-columns: 28px 1fr 90px 80px 60px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--border-radius-md);
+  font-size: 12px;
+}
+.ts-entry:hover {
+  background: var(--color-background-secondary);
+}
+.ts-entry-head {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  font-weight: 500;
+  padding: 0 10px 6px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  margin-bottom: 4px;
+  display: grid;
+  grid-template-columns: 28px 1fr 90px 80px 60px;
+  gap: 10px;
+}
+.ts-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.ts-desc {
+  color: var(--color-text-primary);
+}
+.ts-client {
+  color: var(--color-text-secondary);
+}
+.ts-duration {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+.ts-bill {
+  color: var(--color-text-success);
+}

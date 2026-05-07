@@ -1,0 +1,51 @@
+.view {
+  display: none;
+}
+.view.active {
+  display: block;
+}
+
+/* Reports view */
+.report-filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.filter-chip {
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+.filter-chip.active {
+  background: var(--color-background-secondary);
+  color: var(--color-background-primary);
+  border-color: transparent;
+}
+.report-row {
+  display: grid;
+  grid-template-columns: 1fr 70px 70px 80px;
+  gap: 10px;
+  padding: 9px 10px;
+  font-size: 12px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  align-items: center;
+}
+.report-row:hover {
+  background-color: var(--color-background-hover);
+}
+.report-head {
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  font-weight: 500;
+  display: grid;
+  grid-template-columns: 1fr 70px 70px 80px;
+  gap: 10px;
+  padding: 0 10px 8px;
+  border-bottom: 0.5px solid var(--color-border-secondary);
+  margin-bottom: 4px;
+}

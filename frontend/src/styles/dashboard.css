@@ -1,0 +1,134 @@
+
+/* Dashboard view */
+.view {
+  display: none;
+}
+.view.active {
+  display: block;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.metric {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 12px 14px;
+}
+.metric-label {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-bottom: 4px;
+}
+.metric-value {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+.metric-sub {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.card {
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 14px 16px;
+}
+.card-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+}
+
+.client-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+.client-row:last-child {
+  border-bottom: none;
+}
+.client-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.client-name {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  flex: 1;
+}
+.client-hours {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.client-bar-wrap {
+  width: 60px;
+  height: 4px;
+  background: var(--color-background-secondary);
+  border-radius: 2px;
+}
+.client-bar {
+  height: 4px;
+  border-radius: 2px;
+}
+
+/* Timer bar */
+.timer-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+.timer-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #639922;
+}
+.timer-status.idle {
+  background: var(--color-border-secondary);
+}
+.timer-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  outline: none;
+}
+.timer-clock {
+  font-size: 14px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-secondary);
+  min-width: 52px;
+}
+.timer-play {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-text-primary);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
