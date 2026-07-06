@@ -1,0 +1,15 @@
+Objet: Installation MADSuite
+
+Bonjour,
+
+Vous trouverez ci-joint le package d'installation de MADSuite.
+
+Etapes simples:
+1. Decompressez le fichier ZIP.
+2. Ouvrez "MADSuite Desktop Agent Setup 1.3.0.exe".
+3. Suivez l'installation jusqu'au bout.
+4. Ouvrez l'application et connectez-vous avec vos identifiants.
+
+Si vous avez un souci pendant l'installation, repondez simplement a ce courriel.
+
+Merci,

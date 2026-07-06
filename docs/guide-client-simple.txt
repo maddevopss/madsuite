@@ -1,0 +1,12 @@
+MADSuite - Guide client simple
+
+1. Ouvrez le fichier "MADSuite Desktop Agent Setup 1.3.0.exe".
+2. Suivez l'installation jusqu'au bout.
+3. Lancez MADSuite Desktop Agent.
+4. Connectez-vous avec votre courriel et votre mot de passe.
+5. Si vous avez un souci, contactez le support.
+
+Notes:
+- Le logiciel doit rester ouvert pendant l'utilisation.
+- Fermez-le uniquement quand vous avez terminé.
+- N'essayez pas de modifier les dossiers internes du programme.

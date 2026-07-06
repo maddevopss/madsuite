@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+    # BLINDAGE : On retire 'ports' pour que personne sur le web ne puisse attaquer ta DB
+    volumes:
+      - madsuite-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - madsuite-network
+
+  backend:
+    image: node:22
+    restart: always
+    working_dir: /app/backend
+    command: sh -c "npm install && npm run dev" # Change pour "npm run start" quand tu seras prêt pour la vraie prod
+    environment:
+      NODE_ENV: production # On passe en mode prod
+      PORT: 5000
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      ACCESS_TOKEN_EXPIRES_IN: ${ACCESS_TOKEN_EXPIRES_IN:-1h}
+      REFRESH_TOKEN_EXPIRES_IN: ${REFRESH_TOKEN_EXPIRES_IN:-30d}
+      BCRYPT_SALT_ROUNDS: ${BCRYPT_SALT_ROUNDS:-10}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:?DB_NAME is required}
+      DB_USER: ${DB_USER:?DB_USER is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      FRONTEND_URL: https://app.tonsaas.com # Ton vrai domaine frontend
+      ELECTRON_URL: https://app.tonsaas.com
+      ENABLE_DB_BACKUP: "0"
+    volumes:
+      - .:/app
+      - backend-node-modules:/app/backend/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - proxy-tier       # Pour que Nginx puisse parler à ton API
+      - madsuite-network # Pour parler à Postgres et Redis
+
+  redis:
+    image: redis:7
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - madsuite-network
+
+  frontend:
+    image: node:22
+    restart: always
+    working_dir: /app/frontend
+    command: sh -c "npm install && npm run build && npm start" # Idéalement build en prod
+    environment:
+      BROWSER: none
+      HOST: 0.0.0.0
+      PORT: 3000
+      VITE_API_URL: https://api.tonsaas.com/api # Ton vrai domaine d'API publique
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - .:/app
+      - frontend-node-modules:/app/frontend/node_modules
+    depends_on:
+      - backend
+    networks:
+      - proxy-tier       # Pour que Nginx puisse envoyer les visiteurs ici
+      - madsuite-network
+
+  maildev:
+    image: maildev/maildev
+    restart: always
+    # Optionnel en prod : utile uniquement si tu veux tester tes courriels à distance.
+    # Si oui, on passera par Nginx pour sécuriser l'interface web (UI).
+    networks:
+      - proxy-tier
+      - madsuite-network
+
+volumes:
+  madsuite-postgres:
+  backend-node-modules:
+  frontend-node-modules:
+
+networks:
+  proxy-tier:
+    external: true # Connexion au bouncer global Nginx Proxy Manager
+  madsuite-network:
+    internal: true # Réseau 100% étanche pour tes DBs et ton backend

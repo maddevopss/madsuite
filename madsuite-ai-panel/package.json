@@ -1,0 +1,26 @@
+{
+  "name": "madsuite-ai-panel",
+  "displayName": "MADSuite AI Panel",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "madsuite.openPanel",
+        "title": "MADSuite: Open AI Panel"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "@types/vscode": "^1.125.0",
+    "typescript": "^5.9.3"
+  }
+}

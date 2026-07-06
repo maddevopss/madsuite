@@ -1,0 +1,87 @@
+<div id="erd-wrap"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#d3d3d3' : '#3d3d3a',
+  },
+});
+const { svg } = await mermaid.render('erd-svg', `erDiagram
+  organisations ||--o{ utilisateurs : "contient"
+  organisations ||--o{ clients : "possède"
+  organisations ||--o{ projets : "possède"
+  organisations ||--o{ time_entries : "scope"
+  organisations ||--o{ activity_logs : "scope"
+  organisations ||--o{ invoices : "émet"
+
+  utilisateurs ||--o{ time_entries : "enregistre"
+  utilisateurs ||--o{ user_sessions : "crée"
+  utilisateurs ||--o{ refresh_tokens : "possède"
+  utilisateurs ||--o{ activity_logs : "génère"
+
+  clients ||--o{ projets : "a"
+  clients ||--o{ invoices : "reçoit"
+  projets ||--o{ time_entries : "reçoit"
+  invoices ||--o{ time_entries : "facture"
+
+  organisations {
+    serial id PK
+    varchar nom
+    timestamptz created_at
+  }
+  utilisateurs {
+    serial id PK
+    varchar nom
+    varchar email
+    varchar role
+    integer organisation_id FK
+    varchar role_org
+    timestamptz deleted_at
+  }
+  projets {
+    serial id PK
+    integer client_id FK
+    integer organisation_id FK
+    varchar status
+    decimal taux_horaire
+    decimal budget
+    timestamptz deleted_at
+  }
+  time_entries {
+    serial id PK
+    integer projet_id FK
+    integer utilisateur_id FK
+    integer organisation_id FK
+    timestamptz start_time
+    timestamptz end_time
+    boolean is_billed
+    integer invoice_id FK
+  }
+  invoices {
+    serial id PK
+    integer client_id FK
+    integer organisation_id FK
+    varchar invoice_number
+    varchar status
+    decimal tax_rate
+  }
+  activity_logs {
+    serial id PK
+    integer utilisateur_id FK
+    varchar app_name
+    boolean is_idle
+    varchar type
+    integer duration_seconds
+  }
+`);
+document.getElementById('erd-wrap').innerHTML = svg;
+</script>

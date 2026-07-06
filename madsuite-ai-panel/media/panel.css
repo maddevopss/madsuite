@@ -1,0 +1,20 @@
+body {
+  font-family: sans-serif;
+  padding: 10px;
+  background: #1e1e1e;
+  color: white;
+}
+
+button {
+  display: block;
+  margin: 6px 0;
+  width: 100%;
+  padding: 8px;
+  background: #333;
+  color: white;
+  border: none;
+}
+
+button:hover {
+  background: #555;
+}
