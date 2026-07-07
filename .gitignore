@@ -39,6 +39,14 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# signing material
+*.p12
+*.pfx
+*.cer
+*.crt
+*.key
+scripts/certs/
+
 # OS
 .DS_Store
 Thumbs.db
