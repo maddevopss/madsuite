@@ -1,46 +1,87 @@
 :root {
-  --color-background-primary: linear-gradient(to right, #89b1da, #3685d4, #0b57a3);
-  --color-background-secondary: #f0f0f0;
-  --color-background-info: #08b45e;
-  --color-border-tertiary: #000000;
-  --color-text-primary: #201f1f;
-  --color-text-secondary: #585656;
+  /* DOPAMINE-SAFE DESIGN SYSTEM */
 
+  /* BASE COLORS */
+  --color-background: #0B0F14;
+  --color-surface: #121826;
+  --color-elevated: #1A2233;
+  --color-border: #253047;
 
-    /* SPACING */
+  /* TEXT */
+  --color-text-primary: #E6EAF2;
+  --color-text-secondary: #A7B0C0;
+  --color-text-muted: #6B7280;
+
+  /* ACCENT */
+  --color-primary: #4C7DFF;
+  --color-primary-hover: #3B66D9;
+  --color-primary-glow: rgba(76, 125, 255, 0.12);
+
+  /* SEMANTIC */
+  --color-success: #3FBF7F;
+  --color-warning: #D9A441;
+  --color-danger: #D16666;
+
+  /* SPACING SYSTEM (8px Grid) */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
   --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
 
-  /* BORDER */
+  /* Short aliases (recommended) */
+  --space-1: var(--spacing-xs);
+  --space-2: var(--spacing-sm);
+  --space-3: var(--spacing-md);
+  --space-4: var(--spacing-lg);
+  --space-5: var(--spacing-xl);
+  --space-6: var(--spacing-2xl);
+  --space-7: var(--spacing-3xl);
+
+  /* BORDERS */
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 20px;
 
-  /* SHADOW */
-  --shadow-md: 0 4px 12px rgba(0,0,0,.2);
+  /* SHADOWS (Subtle for cognitive load reduction) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
 
-  /* TRANSITIONS */
+  /* TRANSITIONS (200-400ms per rules) */
   --transition-fast: 0.2s ease;
-  --transition: background 0.2s ease, color 0.2s ease;
+  --transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 
+  /* BREAKPOINTS */
+  --bp-mobile: 768px;
+  --bp-tablet: 1024px;
+  --bp-desktop: 1280px;
+
+  /* LEGACY ALIASES (to prevent app from breaking) */
+  --color-primary-600: var(--color-primary);
+  --color-surface: var(--color-elevated);
+  --color-surface-muted: var(--color-surface);
+  --color-on-brand: var(--color-text-primary);
+  --color-on-surface: var(--color-text-primary);
+  --color-border-subtle: #253047;
+  --color-info: var(--color-primary);
+  --color-text-tertiary: var(--color-text-secondary);
+  --color-background-primary: var(--color-background);
+  --color-background-secondary: var(--color-surface);
+  --color-background-info: var(--color-success);
+  --color-background-alert: var(--color-danger);
+  --color-secondary: var(--color-text-secondary);
+  --color-border-primary: var(--color-border);
+  --color-border-secondary: var(--color-border);
+  --color-border-tertiary: var(--color-border);
+  --color-primary-50: var(--color-background);
+  --color-primary-100: var(--color-surface);
+  --color-primary-200: var(--color-elevated);
+  --color-primary-300: var(--color-border);
+  --color-primary-950: var(--color-text-primary);
 }
 
-/* LIGHT MODE */
-
-/* [data-theme="light"] {
-  --color-bg: #f8fafc;
-  --color-surface: #ffffff;
-  --color-text: #0f172a;
-  --color-primary: #2563eb;
-} */
-
-/* DARK MODE */
-
-/* [data-theme="dark"] {
-  --color-bg: #0f172a;
-  --color-surface: #1e293b;
-  --color-text: #f8fafc;
-  --color-primary: #3b82f6;
-} */
+/* Le thème par défaut EST désormais le thème sombre cognitif.
+   Les règles dark héritent des racines. */

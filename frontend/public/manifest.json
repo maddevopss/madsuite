@@ -1,9 +1,10 @@
 {
-  "short_name": "ChronoMAD",
-  "name": "ChronoMAD - Suivi du temps",
+  "short_name": "MADSuite",
+  "name": "MADSuite - Suivi du temps",
   "description": "outil de suivi du temps intelligent et efficace pour les professionnels et les équipes",
   "author": "MAD",
   "copyright": "2026 MAD",
+  "license": "MIT",
   "icons": [
     {
       "src": "favicon.ico",
