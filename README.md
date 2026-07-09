@@ -1,51 +1,91 @@
-# 📋 ChronoMAD
+# MADSuite
 
-Outils de gestion et suivi du temps
+Repo historique / agrégateur du produit MADSuite.
 
-## 🚀 Installation
+MADSuite est un SaaS de gestion et d’assistance cognitive non médicale pour travailleurs autonomes et petites équipes : clients, projets, temps, facturation, estimés, modules et parcours de reprise opérationnelle.
 
-```bash
-git clone https://github.com/bleeband/chronoMAD
-npm install
-npm run dev
+## Source de vérité
+
+La documentation officielle et les décisions structurantes vivent dans :
+
+```text
+bleeband/SYSTEME_MAD
 ```
 
-## 📁 Structure du projet
+Documents à consulter avant toute décision produit ou technique :
 
+```text
+MANIFEST.md
+00-SYSTEME-MAD/ai-context.md
+00-SYSTEME-MAD/ai-context-madsuite-madproof.md
+00-SYSTEME-MAD/repos.md
+04-ADR/
+09-CHECKLISTS/
 ```
-ChronoMAD/
-├── .gitignore
-├── backend/
-├── frontend/
-├── desktop-agent/
-├── package.json
-└── README.md
+
+## Repos actifs
+
+Les développements actifs sont séparés par responsabilité :
+
+```text
+maddevopss/madsuite-frontend   Application web React/Vite
+maddevopss/madsuite-backend    API, sécurité, jobs, logique métier
+maddevopss/desktop-agent       Agent desktop Electron
+maddevopss/e2e                 Tests Playwright end-to-end
+bleeband/SYSTEME_MAD           Gouvernance, standards, MADPROOF, décisions
 ```
 
-## ✨ Fonctionnalités
+## Statut de ce repo
 
-- 📕 Suivi du temps
-- 📕 Rapport et Statistique
-- 📕 +++
+Ce dépôt peut contenir de l’historique, des essais ou des éléments hérités de l’ancien nom ChronoMAD / TimeMonitoring.
 
-## 👨‍💻 Auteurs
+Ne pas le traiter comme source unique du produit actuel sans vérifier :
 
-<p align="center">
-<pre>
-███╗   ███╗ █████╗ ██████╗
-████╗ ████║██╔══██╗██╔══██╗
-██╔████╔██║███████║██║  ██║
-██║╚██╔╝██║██╔══██║██║  ██║
-██║ ╚═╝ ██║██║  ██║██████╔╝
-╚═╝     ╚═╝╚═╝  ╚╝╚═════╝
-</pre>
-</p>
+1. `bleeband/SYSTEME_MAD` pour la gouvernance;
+2. `maddevopss/madsuite-frontend` pour le frontend actif;
+3. `maddevopss/madsuite-backend` pour le backend actif;
+4. `maddevopss/desktop-agent` pour l’agent local;
+5. `maddevopss/e2e` pour les tests end-to-end.
 
-<p align="left">
-Réalisé par Marc-André Dufour  <br>
-© 2026 — Fait avec du café, du code et un peu de rage contrôlée
-</p>
+## Règles MADPROOF
 
-## 📄 Licence
+MADSuite doit rester une assistance cognitive non médicale.
 
-Ce projet est sous licence MIT.
+À éviter :
+
+- diagnostic;
+- promesse clinique;
+- mesure d’état mental réel;
+- caméra ou microphone par défaut;
+- profilage externe;
+- comparaison entre utilisateurs;
+- score de normalité.
+
+Formulation sûre :
+
+```text
+MADSuite ne remplace pas l’utilisateur. MADSuite lui redonne le fil.
+```
+
+## Installation locale
+
+Ce repo ne doit pas être utilisé comme guide d’installation principal tant que son rôle exact n’est pas clarifié.
+
+Pour travailler sur les composants actifs, utiliser les README des repos spécialisés :
+
+```text
+maddevopss/madsuite-frontend
+maddevopss/madsuite-backend
+maddevopss/desktop-agent
+maddevopss/e2e
+```
+
+## Auteurs
+
+Réalisé par Marc-André Dufour.
+
+© 2026 — MAD DevOps.
+
+## Licence
+
+MIT, sauf indication contraire dans les repos spécialisés ou la documentation officielle.
