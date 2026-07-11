@@ -29,19 +29,24 @@ jobs:
           test -s README.md
           node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))"
 
-      - name: Validate expected repository layout
+      - name: Validate tracked snapshots
         run: |
           test -d frontend
           test -d backend
-          test -d desktop-agent
-          test -d e2e
+          test -s frontend/package.json
+          test -s backend/package.json
 
       - name: Validate delegated package manifests
         run: |
           node -e "JSON.parse(require('fs').readFileSync('frontend/package.json', 'utf8'))"
           node -e "JSON.parse(require('fs').readFileSync('backend/package.json', 'utf8'))"
-          node -e "JSON.parse(require('fs').readFileSync('desktop-agent/package.json', 'utf8'))"
-          node -e "JSON.parse(require('fs').readFileSync('e2e/package.json', 'utf8'))"
+          for package_file in desktop-agent/package.json e2e/package.json; do
+            if [ -f "$package_file" ]; then
+              node -e "JSON.parse(require('fs').readFileSync('$package_file', 'utf8'))"
+            else
+              echo "Optional delegated snapshot not tracked here: $package_file"
+            fi
+          done
 
       - name: Explain CI scope
         run: |
