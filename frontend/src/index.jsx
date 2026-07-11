@@ -22,22 +22,6 @@ import { CognitiveStateProvider } from "./context/CognitiveStateProvider";
 
 const queryClient = new QueryClient();
 
-// CSP injection
-(() => {
-  try {
-    const raw = import.meta.env.VITE_API_URL || "/api";
-    const isRelative = raw.startsWith("/");
-    const apiOrigin = isRelative ? "" : new URL(raw).origin;
-
-    const connectSrc = apiOrigin ? `'self' ${apiOrigin}` : "'self'";
-
-    const meta = document.createElement("meta");
-    meta.httpEquiv = "Content-Security-Policy";
-    meta.content = `default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src ${connectSrc};`;
-    document.head.insertBefore(meta, document.head.firstChild);
-  } catch {}
-})();
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
