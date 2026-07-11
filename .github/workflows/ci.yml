@@ -1,107 +1,49 @@
-name: CI
+name: Aggregator Smoke
 
 on:
   push:
-    branches: [main, master, "V5.2", "feature/**", "fix/**", "refactor/**"]
+    branches: [main, master]
   pull_request:
-    branches: [main, master, "V5.2"]
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  backend:
-    name: Backend — Lint & Tests
+  smoke:
+    name: Repository smoke
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
-
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_password
-          POSTGRES_DB: madsuite_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    env:
-      NODE_ENV: test
-      TEST_DATABASE_URL: postgresql://test_user:test_password@localhost:5432/madsuite_test
-      JWT_SECRET: test-secret-key-minimum-32-chars-ok!
-      REDIS_DISABLED: "true"
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: "npm"
-          cache-dependency-path: backend/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Validate root metadata
+        run: |
+          test -s README.md
+          node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))"
 
-      - name: Lint
-        run: npm run lint || true
+      - name: Validate expected repository layout
+        run: |
+          test -d frontend
+          test -d backend
+          test -d desktop-agent
+          test -d e2e
 
-      - name: Run tests
-        run: npm test -- --runInBand --forceExit
+      - name: Validate delegated package manifests
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('frontend/package.json', 'utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('backend/package.json', 'utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('desktop-agent/package.json', 'utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('e2e/package.json', 'utf8'))"
 
-  frontend:
-    name: Frontend — Lint & Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint || true
-
-      - name: Run tests
-        run: npm test -- --watchAll=false --passWithNoTests
-
-  desktop:
-    name: Desktop Agent — Tests
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: desktop-agent
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: desktop-agent/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm test -- --runInBand --forceExit
-        env:
-          NODE_ENV: test
-          JEST_WORKER_ID: "1"
+      - name: Explain CI scope
+        run: |
+          echo "This repository is an aggregator snapshot."
+          echo "Full CI runs live in the dedicated frontend, backend, desktop-agent and e2e repositories."
