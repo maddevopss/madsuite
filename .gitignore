@@ -1,6 +1,7 @@
 # sub-repositories managed separately
 frontend/
 backend/
+frontend/
 e2e/
 desktop-agent/
 
