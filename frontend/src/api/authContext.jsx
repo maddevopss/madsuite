@@ -41,14 +41,23 @@ export function AuthProvider({ children }) {
         }
 
         // Web mode: fallback sur refresh web.
-        if (!authService.getToken()) {
-          const refreshed = await authService.refreshSession();
+// Web mode : synchroniser d'abord le token mémoire avec l'état React.
+const currentToken = authService.getToken();
 
-          if (!cancelled) {
-            setToken(refreshed.token);
-            setUser(refreshed.user || null);
-          }
-        }
+if (currentToken) {
+  if (!cancelled) {
+    setToken(currentToken);
+  }
+
+  return;
+}
+
+const refreshed = await authService.refreshSession();
+
+if (!cancelled) {
+  setToken(refreshed.token);
+  setUser(refreshed.user || null);
+}
       } catch {
         // En mode tests (ou si AuthProvider non présent), on garde un comportement dégradé.
         // Certains tests montent des pages sans wrapper AuthProvider.

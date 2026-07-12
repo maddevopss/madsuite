@@ -1,8 +1,9 @@
 import api from "./api";
 import { clearAccessToken, getAccessToken, setAccessToken } from "./tokenStore";
-
+let refreshSessionPromise = null;
 
 const authService = {
+  
   // Connecte l'utilisateur et sauvegarde le token.
   // En Electron, on passe par le main process pour que le cookie refresh HTTP-only
   // soit capturé et conservé côté agent. Sinon le refresh desktop casse après expiration.
@@ -61,17 +62,38 @@ const authService = {
     }
   },
 
-  refreshSession: async () => {
+refreshSession: async () => {
+  if (refreshSessionPromise) {
+    return refreshSessionPromise;
+  }
+
+  refreshSessionPromise = (async () => {
     const response = await api.post("/refresh");
-    const token = response.data?.token || response.data?.access_token;
+
+    const token =
+      response.data?.token ||
+      response.data?.access_token;
+
     const user = response.data?.user || null;
 
-    if (!token) throw new Error("Token manquant du serveur");
+    if (!token) {
+      throw new Error("Token manquant du serveur");
+    }
 
     setAccessToken(token);
-    return { token, user };
-  },
 
+    return {
+      token,
+      user
+    };
+  })();
+
+  try {
+    return await refreshSessionPromise;
+  } finally {
+    refreshSessionPromise = null;
+  }
+},
   // Retourne le token actuel
   getToken: () => {
     return getAccessToken();

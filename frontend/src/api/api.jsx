@@ -43,27 +43,34 @@ const redirectToLogin = () => {
       // ignore storage/event errors
     }
 
-    if (process.env.NODE_ENV !== "test" && !isAlreadyOnLogin) {
+    if (env.NODE_ENV !== "test" && !isAlreadyOnLogin) {
       window.location.replace("/login");
     }
   }
 };
 
-// Écoute les rafraîchissements provenant d'autres onglets
+// Écoute les signaux de session provenant d'autres onglets.
+// Règle MADPROOF: ne jamais recevoir ni transmettre de token brut via BroadcastChannel.
 if (authChannel) {
   authChannel.onmessage = (event) => {
-    const { type, token, error, user } = event.data;
-    if (type === "REFRESH_SUCCESS") {
-      setAccessToken(token);
+    const { type, error } = event.data || {};
+
+    if (type === "SESSION_REFRESHED" || type === "SESSION_UPDATED") {
       cachedExpiry = null;
-      processQueue(null, token);
-      isRefreshing = false;
-      // Notifier l'UI de l'onglet courant
-      window.dispatchEvent(new CustomEvent("auth:token-refreshed", { detail: { token, user } }));
-    } else if (type === "REFRESH_ERROR") {
-      processQueue(new Error(error), null);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("auth:session-updated"));
+      }
+    } else if (type === "SESSION_REFRESH_ERROR") {
+      processQueue(new Error(error || "Session refresh failed"), null);
       isRefreshing = false;
       redirectToLogin();
+    } else if (type === "SESSION_CLEARED") {
+      processQueue(new Error("Session cleared"), null);
+      isRefreshing = false;
+      clearAccessToken(false);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("auth:expired"));
+      }
     }
   };
 }
@@ -131,11 +138,15 @@ const refreshTokenIfNeeded = async () => {
       return navigator.locks.request("auth_refresh_lock", async () => {
         try {
           // DOUBLE-CHECK : Un autre onglet a peut-être déjà fini le refresh pendant qu'on attendait le verrou
-          const currentToken = getAccessToken();
-          if (!isTokenExpired(currentToken)) {
-            processQueue(null, currentToken);
-            return currentToken;
-          }
+const currentToken = getAccessToken();
+
+if (
+  currentToken &&
+  !isTokenExpired(currentToken)
+) {
+  processQueue(null, currentToken);
+  return currentToken;
+}
 
           const refreshData = await api.post("/refresh").then((res) => res.data);
           const newToken = refreshData?.token || refreshData?.access_token;
@@ -144,9 +155,9 @@ const refreshTokenIfNeeded = async () => {
           cachedExpiry = null;
           setAccessToken(newToken);
 
-          // Notifier les autres onglets via BroadcastChannel
+          // Notifier les autres onglets sans transmettre le token.
           if (authChannel) {
-            authChannel.postMessage({ type: "REFRESH_SUCCESS", token: newToken, user: refreshData?.user });
+            authChannel.postMessage({ type: "SESSION_REFRESHED" });
           }
 
           window.dispatchEvent(
@@ -172,14 +183,14 @@ const refreshTokenIfNeeded = async () => {
     setAccessToken(newToken);
 
     if (authChannel) {
-      authChannel.postMessage({ type: "REFRESH_SUCCESS", token: newToken, user: refreshData?.user });
+      authChannel.postMessage({ type: "SESSION_REFRESHED" });
     }
 
     processQueue(null, newToken);
     return newToken;
   } catch (err) {
     if (authChannel && !isElectron) {
-      authChannel.postMessage({ type: "REFRESH_ERROR", error: err.message });
+      authChannel.postMessage({ type: "SESSION_REFRESH_ERROR", error: err.message });
     }
     processQueue(err, null);
     redirectToLogin();

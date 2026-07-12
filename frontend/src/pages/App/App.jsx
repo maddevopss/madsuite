@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "../../api/authContext";
 import Login from "../Login/Login";
 import Dashboard from "../Dashboard";
 import Users from "../Users";
@@ -12,7 +11,6 @@ import ProtectedRoute from "../../routes/ProtectedRoute";
 
 export default function App() {
   return (
-    <AuthProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -29,6 +27,5 @@ export default function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
   );
 }

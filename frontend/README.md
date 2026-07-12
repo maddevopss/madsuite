@@ -47,6 +47,8 @@ Avant de pousser une correction frontend sensible, exécuter :
 ```bash
 npm run guard:gitignore
 npm run guard:hygiene
+npm run guard:auth-broadcast
+npm run guard:security-headers
 npm run guard:modules-api
 npm run guard:modules-known-keys
 npm run guard:app-module-routes
@@ -62,12 +64,17 @@ Les guards bloquent notamment :
 
 - règles `.gitignore` critiques manquantes;
 - fichiers d’environnement réels, builds ou rapports générés suivis par Git;
+- diffusion accidentelle de jetons bruts via `BroadcastChannel` / `postMessage`;
+- régressions sur les headers de sécurité Vercel;
 - appels directs interdits à l’API modules;
-- routes ou clés modules non alignées avec le contrat applicatif.
+- routes ou clés modules non alignées avec le contrat applicatif;
+- régressions sur les routes App protégées par module ou rôle.
 
 ## Environnement
 
 Ne jamais commiter de fichier d’environnement réel. Utiliser l’exemple fourni comme référence sans valeur sensible.
+
+Les accès environnement frontend doivent passer par `src/env.js` quand le code applicatif a besoin de lire une valeur Vite/Jest/Node.
 
 ## Statut
 
