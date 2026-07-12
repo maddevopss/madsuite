@@ -52,8 +52,13 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci --prefix frontend
 
+      - name: Install E2E dependencies
+        working-directory: e2e
+        run: npm ci
+
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: e2e
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Start backend server
         run: npm run start:test --prefix backend &
@@ -92,17 +97,21 @@ jobs:
           echo "❌ Frontend failed to start"
           exit 1
 
-      - name: Run responsive tests — Chromium
-        run: npx playwright test e2e/responsive-mobile.spec.js --project=chromium
+      - name: Run responsive tests — Chromium desktop
+        working-directory: e2e
+        run: npx playwright test --project=chromium-desktop --reporter=list
+
+      - name: Run responsive tests — WebKit mobile
+        working-directory: e2e
+        run: npx playwright test --project=webkit-mobile --reporter=list
+
+      - name: Run responsive tests — Chromium mobile
+        working-directory: e2e
+        run: npx playwright test --project=chromium-mobile --reporter=list
 
       - name: Run responsive tests — Firefox
-        run: npx playwright test e2e/responsive-mobile.spec.js --project=firefox
-
-      - name: Run responsive tests — WebKit
-        run: npx playwright test e2e/responsive-mobile.spec.js --project=webkit
-
-      - name: Run responsive screenshots — Visual Evidence
-        run: npx playwright test e2e/responsive-screenshots.spec.js --project=chromium
+        working-directory: e2e
+        run: npx playwright test --project=firefox
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
@@ -110,8 +119,8 @@ jobs:
         with:
           name: playwright-responsive-nightly-report
           path: |
-            playwright-report/
-            test-results/
+            e2e/playwright-report/
+            e2e/test-results/
           retention-days: 14
 
       - name: Upload test traces
