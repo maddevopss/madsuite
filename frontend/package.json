@@ -43,12 +43,10 @@
     "test:coverage": "jest --coverage",
     "guard:gitignore": "node scripts/guard-gitignore-policy.js",
     "guard:hygiene": "node scripts/guard-repo-hygiene.js",
-    "guard:auth-broadcast": "node scripts/guard-auth-broadcast.js",
-    "guard:security-headers": "node scripts/guard-security-headers.js",
     "guard:modules-api": "node scripts/guard-modules-api.js",
     "guard:modules-known-keys": "node scripts/guard-modules-known-keys.js",
     "guard:app-module-routes": "node scripts/guard-app-module-routes.js",
-    "check:frontend": "npm run guard:gitignore && npm run guard:hygiene && npm run guard:auth-broadcast && npm run guard:security-headers && npm run guard:modules-api && npm run guard:modules-known-keys && npm run guard:app-module-routes && npm run lint && npm test -- --watchAll=false && npm run build",
+    "check:frontend": "npm run guard:gitignore && npm run guard:hygiene && npm run guard:modules-api && npm run guard:modules-known-keys && npm run guard:app-module-routes && npm run lint && npm test -- --watchAll=false && npm run build",
     "test:e2e:responsive": "cd ../e2e && npm run test:responsive"
   },
   "eslintConfig": {

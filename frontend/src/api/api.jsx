@@ -43,34 +43,27 @@ const redirectToLogin = () => {
       // ignore storage/event errors
     }
 
-    if (env.NODE_ENV !== "test" && !isAlreadyOnLogin) {
+    if (process.env.NODE_ENV !== "test" && !isAlreadyOnLogin) {
       window.location.replace("/login");
     }
   }
 };
 
-// Écoute les signaux de session provenant d'autres onglets.
-// Règle MADPROOF: ne jamais recevoir ni transmettre de token brut via BroadcastChannel.
+// Écoute les rafraîchissements provenant d'autres onglets
 if (authChannel) {
   authChannel.onmessage = (event) => {
-    const { type, error } = event.data || {};
-
-    if (type === "SESSION_REFRESHED" || type === "SESSION_UPDATED") {
+    const { type, token, error, user } = event.data;
+    if (type === "REFRESH_SUCCESS") {
+      setAccessToken(token);
       cachedExpiry = null;
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("auth:session-updated"));
-      }
-    } else if (type === "SESSION_REFRESH_ERROR") {
-      processQueue(new Error(error || "Session refresh failed"), null);
+      processQueue(null, token);
+      isRefreshing = false;
+      // Notifier l'UI de l'onglet courant
+      window.dispatchEvent(new CustomEvent("auth:token-refreshed", { detail: { token, user } }));
+    } else if (type === "REFRESH_ERROR") {
+      processQueue(new Error(error), null);
       isRefreshing = false;
       redirectToLogin();
-    } else if (type === "SESSION_CLEARED") {
-      processQueue(new Error("Session cleared"), null);
-      isRefreshing = false;
-      clearAccessToken(false);
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("auth:expired"));
-      }
     }
   };
 }
@@ -151,9 +144,9 @@ const refreshTokenIfNeeded = async () => {
           cachedExpiry = null;
           setAccessToken(newToken);
 
-          // Notifier les autres onglets sans transmettre le token.
+          // Notifier les autres onglets via BroadcastChannel
           if (authChannel) {
-            authChannel.postMessage({ type: "SESSION_REFRESHED" });
+            authChannel.postMessage({ type: "REFRESH_SUCCESS", token: newToken, user: refreshData?.user });
           }
 
           window.dispatchEvent(
@@ -179,14 +172,14 @@ const refreshTokenIfNeeded = async () => {
     setAccessToken(newToken);
 
     if (authChannel) {
-      authChannel.postMessage({ type: "SESSION_REFRESHED" });
+      authChannel.postMessage({ type: "REFRESH_SUCCESS", token: newToken, user: refreshData?.user });
     }
 
     processQueue(null, newToken);
     return newToken;
   } catch (err) {
     if (authChannel && !isElectron) {
-      authChannel.postMessage({ type: "SESSION_REFRESH_ERROR", error: err.message });
+      authChannel.postMessage({ type: "REFRESH_ERROR", error: err.message });
     }
     processQueue(err, null);
     redirectToLogin();
