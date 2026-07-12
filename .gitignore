@@ -7,7 +7,6 @@ desktop-agent/
 # dependencies
 node_modules/
 **/node_modules/
-
 # env
 .env
 .env.*
@@ -17,13 +16,11 @@ node_modules/
 !.env.*.example
 !.env.test.example
 !.env.docker.dev
-
 # builds
 dist/
 build/
 **/dist/
 **/build/
-
 # tests / reports
 coverage/
 test-results/
@@ -31,14 +28,12 @@ playwright-report/
 **/coverage/
 **/test-results/
 **/playwright-report/
-
 # logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-
 # signing material
 *.p12
 *.pfx
@@ -46,17 +41,14 @@ pnpm-debug.log*
 *.crt
 *.key
 scripts/certs/
-
 # OS
 .DS_Store
 Thumbs.db
-
 # private/local
 Private/
 auth.json
 project_context.md
 Debug/
-
 # local tools
 .vscode/
 .idea/

@@ -15,11 +15,9 @@ export default function Layout() {
   const { hasClients, hasEstimates, hasInvoices, loading } = useFunnelStatus();
 
   useEffect(() => {
-    // Check onboarding status. The API interceptor unwraps standard ApiResponse payloads,
-    // but this also supports the legacy nested shape for compatibility.
+    // Check onboarding status
     api.get("/onboarding/status").then((res) => {
-      const status = res.data?.data ?? res.data;
-      if (status?.completed === false) {
+      if (res.data && res.data.data && res.data.data.completed === false) {
         navigate("/onboarding", { replace: true });
       }
     }).catch(() => {
