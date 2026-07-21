@@ -49,6 +49,7 @@ Private/
 auth.json
 project_context.md
 Debug/
+.local-runtime/
 # local tools
 .vscode/
 .idea/

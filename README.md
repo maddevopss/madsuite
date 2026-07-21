@@ -2,7 +2,7 @@
 
 MADSuite est un écosystème de gestion pour travailleurs autonomes et petites équipes : clients, projets, suivi du temps, facturation, rapports et assistance contextuelle.
 
-Ce dépôt est le **point d’orientation public** de l’écosystème. Le code d’exécution est maintenu dans des dépôts spécialisés.
+Ce dépôt est le **point d’orientation public et le dépôt intégrateur local** de l’écosystème. Le code d’exécution est maintenu dans des dépôts spécialisés.
 
 ## Dépôts actifs
 
@@ -32,23 +32,83 @@ desktop-agent
            └── valide les parcours distribués
 ```
 
-## État du produit
+## Démarrage local reproductible
 
-MADSuite est en développement actif. Les dépôts applicatifs possèdent leurs propres instructions d’installation, variables d’environnement, commandes de test et pipelines CI.
-
-## Démarrage développeur
-
-Clonez seulement les dépôts nécessaires ou placez les quatre dépôts actifs côte à côte pour les scénarios distribués :
+Placez les dépôts côte à côte :
 
 ```text
 workspace/
+├── madsuite/
 ├── madsuite-frontend/
 ├── madsuite-backend/
 ├── desktop-agent/
 └── e2e/
 ```
 
-Consultez ensuite le `README.md` de chaque dépôt. Ne suivez plus les anciennes instructions `ChronoMAD` : ce nom et l’ancien dépôt monolithique sont obsolètes.
+Prérequis Windows :
+
+- PowerShell 7 recommandé;
+- Node.js et npm accessibles dans le `PATH`;
+- Docker Desktop démarré;
+- ports `5173`, `5050` et `54329` disponibles.
+
+Depuis le dépôt `madsuite` :
+
+```powershell
+./scripts/start-local.ps1
+```
+
+La commande :
+
+1. valide les outils et les dépôts requis;
+2. démarre PostgreSQL 16 avec Docker Compose;
+3. installe les dépendances manquantes avec `npm ci`;
+4. applique les migrations backend;
+5. démarre le backend sur `http://127.0.0.1:5050`;
+6. démarre le frontend sur `http://127.0.0.1:5173`;
+7. attend les endpoints de disponibilité avant d’annoncer le succès.
+
+Les journaux et PID locaux sont écrits dans `.local-runtime/`, qui est ignoré par Git.
+
+Pour arrêter proprement les services :
+
+```powershell
+./scripts/stop-local.ps1
+```
+
+Le volume PostgreSQL est conservé entre les démarrages. Pour repartir complètement à zéro :
+
+```powershell
+docker compose -f compose.local.yml down -v
+```
+
+### Autre emplacement de workspace
+
+Le script accepte un chemin explicite lorsque les dépôts ne sont pas dans le dossier parent :
+
+```powershell
+./scripts/start-local.ps1 -WorkspaceRoot "T:\Projets\MADSuite"
+```
+
+## Validation multi-dépôts
+
+La commande suivante exécute les checks officiels du backend, du frontend et du dépôt E2E :
+
+```powershell
+./scripts/check-all.ps1
+```
+
+Pour tenter également la validation du Desktop Agent lorsqu’il expose `check:desktop` :
+
+```powershell
+./scripts/check-all.ps1 -IncludeDesktopAgent
+```
+
+Chaque échec indique le dépôt et la commande en cause; aucun succès global n’est affiché si une couche échoue.
+
+## État du produit
+
+MADSuite est en développement actif. Les dépôts applicatifs possèdent leurs propres instructions d’installation, variables d’environnement, commandes de test et pipelines CI.
 
 ## Principes
 
@@ -62,7 +122,7 @@ Consultez ensuite le `README.md` de chaque dépôt. Ne suivez plus les anciennes
 
 Avant une PR :
 
-1. exécuter la commande `check:*` du dépôt concerné;
+1. exécuter la commande `check:*` du dépôt concerné ou `./scripts/check-all.ps1`;
 2. documenter les impacts de déploiement et de sécurité;
 3. ajouter ou mettre à jour les tests pertinents;
 4. garder une seule responsabilité principale par PR.
