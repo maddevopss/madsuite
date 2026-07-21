@@ -1,0 +1,93 @@
+name: Local Bootstrap Proof
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/local-bootstrap-proof.yml"
+      - "compose.local.yml"
+      - "scripts/start-local.sh"
+      - "scripts/stop-local.sh"
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clean-runner-bootstrap:
+    name: Bootstrap MADSuite on clean runner
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout integrator repository
+        uses: actions/checkout@v4
+        with:
+          path: madsuite
+
+      - name: Checkout backend
+        uses: actions/checkout@v4
+        with:
+          repository: maddevopss/madsuite-backend
+          path: madsuite-backend
+
+      - name: Checkout frontend
+        uses: actions/checkout@v4
+        with:
+          repository: maddevopss/madsuite-frontend
+          path: madsuite-frontend
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            madsuite-backend/package-lock.json
+            madsuite-frontend/package-lock.json
+
+      - name: Make scripts executable
+        run: chmod +x madsuite/scripts/*.sh
+
+      - name: Start complete local stack
+        working-directory: madsuite
+        env:
+          WORKSPACE_ROOT: ${{ github.workspace }}
+        run: ./scripts/start-local.sh
+
+      - name: Validate backend health
+        run: |
+          curl --fail --silent http://127.0.0.1:5050/api/health | tee backend-health.json
+          grep -q '"status":"ok"' backend-health.json
+          grep -q '"database":"ok"' backend-health.json
+
+      - name: Validate frontend readiness
+        run: curl --fail --silent --head http://127.0.0.1:5173
+
+      - name: Validate restart safety
+        working-directory: madsuite
+        env:
+          WORKSPACE_ROOT: ${{ github.workspace }}
+        run: |
+          ./scripts/stop-local.sh
+          ./scripts/start-local.sh --skip-install
+          curl --fail --silent http://127.0.0.1:5050/api/health
+          curl --fail --silent --head http://127.0.0.1:5173
+
+      - name: Upload local runtime logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-bootstrap-proof-logs
+          path: |
+            madsuite/.local-runtime/logs/
+            backend-health.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Stop local stack
+        if: always()
+        working-directory: madsuite
+        env:
+          WORKSPACE_ROOT: ${{ github.workspace }}
+        run: ./scripts/stop-local.sh
