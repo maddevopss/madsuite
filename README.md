@@ -45,63 +45,102 @@ workspace/
 └── e2e/
 ```
 
-Prérequis Windows :
+Prérequis communs :
 
-- PowerShell 7 recommandé;
 - Node.js et npm accessibles dans le `PATH`;
-- Docker Desktop démarré;
+- Docker et Docker Compose disponibles;
 - ports `5173`, `5050` et `54329` disponibles.
 
-Depuis le dépôt `madsuite` :
+### Windows / PowerShell
 
 ```powershell
 ./scripts/start-local.ps1
 ```
 
-La commande :
-
-1. valide les outils et les dépôts requis;
-2. démarre PostgreSQL 16 avec Docker Compose;
-3. installe les dépendances manquantes avec `npm ci`;
-4. applique les migrations backend;
-5. démarre le backend sur `http://127.0.0.1:5050`;
-6. démarre le frontend sur `http://127.0.0.1:5173`;
-7. attend les endpoints de disponibilité avant d’annoncer le succès.
-
-Les journaux et PID locaux sont écrits dans `.local-runtime/`, qui est ignoré par Git.
-
-Pour arrêter proprement les services :
+Pour arrêter :
 
 ```powershell
 ./scripts/stop-local.ps1
 ```
 
-Le volume PostgreSQL est conservé entre les démarrages. Pour repartir complètement à zéro :
-
-```powershell
-docker compose -f compose.local.yml down -v
-```
-
-### Autre emplacement de workspace
-
-Le script accepte un chemin explicite lorsque les dépôts ne sont pas dans le dossier parent :
+Pour un workspace situé ailleurs :
 
 ```powershell
 ./scripts/start-local.ps1 -WorkspaceRoot "T:\Projets\MADSuite"
 ```
 
+### Linux, macOS ou WSL
+
+Rendez les scripts exécutables après le clone :
+
+```bash
+chmod +x scripts/*.sh
+```
+
+Démarrage :
+
+```bash
+./scripts/start-local.sh
+```
+
+Arrêt :
+
+```bash
+./scripts/stop-local.sh
+```
+
+Pour un workspace situé ailleurs :
+
+```bash
+WORKSPACE_ROOT=/chemin/vers/workspace ./scripts/start-local.sh
+```
+
+Pour éviter `npm ci` lorsque les dépendances sont déjà installées :
+
+```bash
+SKIP_INSTALL=1 ./scripts/start-local.sh
+```
+
+Les commandes de démarrage :
+
+1. valident les outils et les dépôts requis;
+2. démarrent PostgreSQL 16 avec Docker Compose;
+3. installent les dépendances manquantes;
+4. appliquent les migrations backend;
+5. démarrent le backend sur `http://127.0.0.1:5050`;
+6. démarrent le frontend sur `http://127.0.0.1:5173`;
+7. attendent les endpoints de disponibilité avant d’annoncer le succès.
+
+Les journaux et PID locaux sont écrits dans `.local-runtime/`, qui est ignoré par Git.
+
+Le volume PostgreSQL est conservé entre les démarrages. Pour repartir complètement à zéro :
+
+```bash
+docker compose -f compose.local.yml down -v
+```
+
 ## Validation multi-dépôts
 
-La commande suivante exécute les checks officiels du backend, du frontend et du dépôt E2E :
+PowerShell :
 
 ```powershell
 ./scripts/check-all.ps1
+```
+
+Shell Unix :
+
+```bash
+./scripts/check-all.sh
 ```
 
 Pour tenter également la validation du Desktop Agent lorsqu’il expose `check:desktop` :
 
 ```powershell
 ./scripts/check-all.ps1 -IncludeDesktopAgent
+```
+
+```bash
+INCLUDE_DESKTOP_AGENT=1 ./scripts/check-all.sh
 ```
 
 Chaque échec indique le dépôt et la commande en cause; aucun succès global n’est affiché si une couche échoue.
@@ -122,7 +161,7 @@ MADSuite est en développement actif. Les dépôts applicatifs possèdent leurs 
 
 Avant une PR :
 
-1. exécuter la commande `check:*` du dépôt concerné ou `./scripts/check-all.ps1`;
+1. exécuter la commande `check:*` du dépôt concerné ou `./scripts/check-all.ps1` / `./scripts/check-all.sh`;
 2. documenter les impacts de déploiement et de sécurité;
 3. ajouter ou mettre à jour les tests pertinents;
 4. garder une seule responsabilité principale par PR.
