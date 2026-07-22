@@ -1,0 +1,80 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+    volumes:
+      - madsuite-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - madsuite-network
+
+  backend:
+    image: node:22
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm ci && npm start"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:?DB_USER is required}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      DB_NAME: ${DB_NAME:?DB_NAME is required}
+
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      ACCESS_TOKEN_EXPIRES_IN: ${ACCESS_TOKEN_EXPIRES_IN:-15m}
+      REFRESH_TOKEN_EXPIRES_IN: ${REFRESH_TOKEN_EXPIRES_IN:-7d}
+
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:?STRIPE_SECRET_KEY is required}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+
+      FRONTEND_URL: ${FRONTEND_URL:?FRONTEND_URL is required}
+      ELECTRON_URL: ${ELECTRON_URL:-}
+      ENABLE_DB_BACKUP: ${ENABLE_DB_BACKUP:-0}
+    volumes:
+      - ./backend:/app
+      - backend-node-modules:/app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - madsuite-network
+      - proxy-tier
+
+  frontend:
+    image: node:22
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "npm ci && npm run build && npm run preview -- --host 0.0.0.0 --port 4173"
+    environment:
+      NODE_ENV: production
+      VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required}
+    volumes:
+      - ./frontend:/app
+      - frontend-node-modules:/app/node_modules
+    networks:
+      - proxy-tier
+
+volumes:
+  madsuite-postgres:
+  backend-node-modules:
+  frontend-node-modules:
+
+networks:
+  madsuite-network:
+    driver: bridge
+
+  proxy-tier:
+    external: true

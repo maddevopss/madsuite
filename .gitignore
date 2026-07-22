@@ -15,7 +15,8 @@ node_modules/
 !.env.example
 !.env.*.example
 !.env.test.example
-!.env.docker.dev
+.env.docker.dev
+.env.docker.prod
 # builds
 dist/
 build/
@@ -59,3 +60,9 @@ Debug/
 .sixth/
 .blackboxrules
 .clineignore
+
+# Variables privées de déploiement
+.env
+.env.*
+!.env.example
+!.env.vps.example
