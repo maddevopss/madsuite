@@ -39,7 +39,7 @@
     "aggregate:logs": "node src/jobs/runAggregateActivityLogs.js",
     "lint": "eslint src/**/*.js",
     "db:preflight:org": "node src/migrate/preflightOrganisationScope.js",
-    "db:migrate": "node -e \"require('./src/migrate/runMigrations').runMigrations({ backup: process.env.ENABLE_DB_BACKUP === '1' }).then(()=>process.exit(0)).catch(e=>{ console.error(e.message); process.exit(1); })\"",
+    "db:migrate": "node src/migrate/runMigrationsFromFiles.js",
     "deploy:migrate": "cross-env NODE_ENV=production npm run db:migrate"
   },
   "keywords": [],
@@ -84,13 +84,15 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^26.0.0",
     "cross-env": "^10.1.0",
-    "eslint": "^8.57.1",
+    "eslint": "^10.7.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.5.0",
-    "eslint-plugin-promise": "^6.2.0",
+    "eslint-plugin-n": "^18.2.2",
+    "eslint-plugin-promise": "^7.3.0",
+    "globals": "^17.7.0",
     "jest": "^30.4.2",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2",
